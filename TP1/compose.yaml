@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  nginx-resolve-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-resolve-proxy
+    ports:
+      - "8080:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    restart: always
+
+  nginx-service-1:
+    image: nginx
+    environment:
+      VIRTUAL_HOST: m
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 4
