@@ -4,19 +4,40 @@ services:
     image: mysql
     ports:
       - "3306:3306"
+    restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=tlc
       - MYSQL_USER=tlc
       - MYSQL_PASSWORD=tlc
+
   etherpad:
-    image: etherpad/etherpad:stable
+    image: etherpad/etherpad:latest
     ports:
       - "9001:9001"
     volumes:
       - ./APIKEY.txt:/opt/etherpad-lite/APIKEY.txt
+
   mail:
     image: bytemark/smtp
     restart: always
     ports:
       - "2525:25"
+
+  front:
+    build: ./front
+    container_name: doodlestudent_front
+    ports:
+      - "4200:80"
+
+  back:
+    build:
+      context: ./api
+      dockerfile: src/main/docker/Dockerfile.jvm
+    restart: always
+    depends_on:
+      - db
+      - etherpad
+      - mail
+    ports:
+      - "8080:8080"
